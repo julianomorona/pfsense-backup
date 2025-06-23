@@ -10,6 +10,9 @@ import requests
 from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 load_dotenv()
 
@@ -75,7 +78,7 @@ def get_backup():
     client = requests.session()
 
     try:
-        response = client.get(PAGE, timeout=20)
+        response = client.get(PAGE, timeout=20, verify=False)
     except RequestException as error:
         print("Error getting initial CSRF token. Bailing out!")
         print(error)
@@ -89,7 +92,7 @@ def get_backup():
                   "passwordfld": PASS, "__csrf_magic": csrf_token}
 
     try:
-        response = client.post(PAGE, data=login_data, timeout=20)
+        response = client.post(PAGE, data=login_data, timeout=20, verify=False)
     except RequestException as error:
         print("Error login in. Bailing out!")
         print(error)
@@ -103,7 +106,7 @@ def get_backup():
                    "__csrf_magic": csrf_token}
 
     try:
-        response = client.post(PAGE, data=backup_data, timeout=20)
+        response = client.post(PAGE, data=backup_data, timeout=20, verify=False)
     except RequestException as error:
         print("Error downloading xml backup. Bailing out!")
         print(error)
